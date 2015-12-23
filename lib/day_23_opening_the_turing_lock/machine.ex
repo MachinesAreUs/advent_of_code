@@ -12,11 +12,11 @@ defmodule Machine do
 
   def step(m = %Machine{}), do: step m, Enum.at(m.program, m.addr)
 
-  def step(m = %Machine{}, {:hlf, rx}), do: rx_set(m, rx, div(rx_val(m, rx), 2)) |> inc_addr
+  def step(m = %Machine{}, {:hlf, rx}) when is_atom(rx), do: rx_set(m, rx, div(rx_val(m, rx), 2)) |> inc_addr
 
-  def step(m = %Machine{}, {:tpl, rx}), do: rx_set(m, rx, rx_val(m, rx) * 3) |> inc_addr
+  def step(m = %Machine{}, {:tpl, rx}) when is_atom(rx), do: rx_set(m, rx, rx_val(m, rx) * 3) |> inc_addr
 
-  def step(m = %Machine{}, {:inc, rx}), do: rx_set(m, rx, rx_val(m, rx) + 1) |> inc_addr
+  def step(m = %Machine{}, {:inc, rx}) when is_atom(rx), do: rx_set(m, rx, rx_val(m, rx) + 1) |> inc_addr
 
   def step(m = %Machine{}, {:jmp, ofst}) when is_integer(ofst), do: %{m | addr: m.addr + ofst}
 
