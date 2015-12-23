@@ -12,26 +12,23 @@ defmodule Machine do
 
   def step(m = %Machine{}), do: step m, Enum.at(m.program, m.addr)
 
-  def step(m = %Machine{}, {:hlf, :a}), do: %{m | rx_a: div(m.rx_a, 2)} |> inc_addr
-  def step(m = %Machine{}, {:hlf, :b}), do: %{m | rx_b: div(m.rx_b, 2)} |> inc_addr
+  def step(m = %Machine{}, {:hlf, rx}), do: rx_set(m, rx, div(rx_val(m, rx), 2)) |> inc_addr
 
-  def step(m = %Machine{}, {:tpl, :a}), do: %{m | rx_a: m.rx_a * 3} |> inc_addr
-  def step(m = %Machine{}, {:tpl, :b}), do: %{m | rx_b: m.rx_b * 3} |> inc_addr
+  def step(m = %Machine{}, {:tpl, rx}), do: rx_set(m, rx, rx_val(m, rx) * 3) |> inc_addr
 
-  def step(m = %Machine{}, {:inc, :a}), do: %{m | rx_a: m.rx_a + 1} |> inc_addr
-  def step(m = %Machine{}, {:inc, :b}), do: %{m | rx_b: m.rx_b + 1} |> inc_addr
+  def step(m = %Machine{}, {:inc, rx}), do: rx_set(m, rx, rx_val(m, rx) + 1) |> inc_addr
 
   def step(m = %Machine{}, {:jmp, ofst}) when is_integer(ofst), do: %{m | addr: m.addr + ofst}
 
   def step(m = %Machine{}, {:jie, rx, ofst}) when is_atom(rx) and is_integer(ofst) do
-    case rem(rx_value(m, rx), 2) do
+    case rem(rx_val(m, rx), 2) do
        0 -> m |> step {:jmp, ofst}
        _ -> m |> inc_addr
     end
   end
 
   def step(m = %Machine{}, {:jio, rx, ofst}) when is_atom(rx) and is_integer(ofst) do
-    case rx_value(m, rx) do
+    case rx_val(m, rx) do
        1 -> m |> step {:jmp, ofst}
        _ -> m |> inc_addr
     end 
@@ -39,9 +36,10 @@ defmodule Machine do
 
   defp inc_addr(m = %Machine{}), do: %{m | addr: m.addr + 1}
 
-  defp rx_value(m, atom) do
-    real_prop = "rx_" <> Atom.to_string(atom) |> String.to_atom  
-    Map.get m, real_prop
-  end
+  defp rx_val(m, atom), do: Map.get m, real_prop(atom)
+
+  defp rx_set(m, atom, val), do: Map.put m, real_prop(atom), val
+    
+  defp real_prop(atom), do: "rx_" <> Atom.to_string(atom) |> String.to_atom  
 
 end
