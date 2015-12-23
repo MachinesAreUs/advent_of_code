@@ -3,7 +3,7 @@ defmodule Machine do
   @do_nothing [{:jump, 0}]
   defstruct rx_a: 0, rx_b: 0, addr: 0, program: @do_nothing
 
-  def run(m=%Machine{addr: addr, program: program}) do
+  def run(m = %Machine{addr: addr, program: program}) do
     case addr < 0 or addr >= length(program) do
       true -> m.rx_b
       _    -> run(step(m))
