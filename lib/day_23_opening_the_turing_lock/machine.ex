@@ -25,14 +25,14 @@ defmodule Machine do
 
   def step(m = %Machine{}, {:jie, rx, ofst}) when is_atom(rx) and is_integer(ofst) do
     case rem(rx_value(m, rx), 2) do
-       0 -> step(m, {:jmp, ofst})
+       0 -> m |> step {:jmp, ofst}
        _ -> m |> inc_addr
     end
   end
 
   def step(m = %Machine{}, {:jio, rx, ofst}) when is_atom(rx) and is_integer(ofst) do
     case rx_value(m, rx) do
-       1 -> step(m, {:jmp, ofst})
+       1 -> m |> step {:jmp, ofst}
        _ -> m |> inc_addr
     end 
   end
