@@ -1,12 +1,12 @@
 defmodule Machine do
 
   @do_nothing [{:jump, 0}]
-  defstruct rx_a: 0, rx_b: 0, addr: 0, program: @do_nothing
+  defstruct a: 0, b: 0, addr: 0, program: @do_nothing
 
   def run(m = %Machine{addr: addr, program: program}) do
     case addr < 0 or addr >= length(program) do
-      true -> m.rx_b
-      _    -> run(step(m))
+      true -> {m.a, m.b}
+      _    -> m |> step |> run
     end
   end
 
@@ -33,8 +33,6 @@ defmodule Machine do
 
   defp inc_addr(m = %Machine{}), do: %{m | addr: m.addr + 1}
 
-  defp rx_val(m, atom),      do: Map.get m, real_prop(atom)
-  defp rx_set(m, atom, val), do: Map.put m, real_prop(atom), val
-    
-  defp real_prop(atom), do: "rx_" <> Atom.to_string(atom) |> String.to_atom  
+  defp rx_val(m, atom),      do: Map.get m, atom
+  defp rx_set(m, atom, val), do: Map.put m, atom, val
 end
