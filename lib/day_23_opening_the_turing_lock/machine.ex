@@ -5,7 +5,7 @@ defmodule Machine do
 
   def run(m = %Machine{addr: addr, program: program}) do
     case addr < 0 or addr >= length(program) do
-      true -> {m.a, m.b}
+      true -> [a: m.a, b: m.b]
       _    -> m |> step |> run
     end
   end
